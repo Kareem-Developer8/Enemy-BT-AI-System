@@ -1,0 +1,69 @@
+using UnityEngine;
+
+public class OrgreAnimiation : MonoBehaviour
+{
+    private Animator animator;
+    private int[] attackTriggerHashes = new int[3];
+    private static readonly int IdleHash = Animator.StringToHash("Idle");
+    private static readonly int WalkHash = Animator.StringToHash("Walk");
+    private static readonly int RunHash = Animator.StringToHash("Run");
+    private static readonly int Attack1Hash = Animator.StringToHash("Attack");
+    private static readonly int Attack2Hash = Animator.StringToHash("Attack2");
+    private static readonly int Attack3Hash = Animator.StringToHash("Attack3");
+    private static readonly int HurtHash = Animator.StringToHash("Hurt");
+    private static readonly int DieHash = Animator.StringToHash("Die");
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+        attackTriggerHashes[0] = Animator.StringToHash("Attack1");
+        attackTriggerHashes[1] = Animator.StringToHash("Attack2");
+        attackTriggerHashes[2] = Animator.StringToHash("Attack3");
+    }
+    public void SetAnimatorBools(bool idle, bool walk, bool run, int attackIndex, bool hurt, bool die)
+    {
+        animator.SetBool(IdleHash, idle);
+        animator.SetBool(WalkHash, walk);
+        animator.SetBool(RunHash, run);
+        animator.SetBool(Attack1Hash, false);
+        animator.SetBool(Attack2Hash, false);
+        animator.SetBool(Attack3Hash, false);
+
+        // Set selected attack bool
+        if (attackIndex >= 0)
+        {
+            switch (attackIndex)
+            {
+                case 0:
+                    animator.SetBool(Attack1Hash, true);
+                    break;
+                case 1:
+                    animator.SetBool(Attack2Hash, true);
+                    break;
+                case 2:
+                    animator.SetBool(Attack3Hash, true);
+                    break;
+            }
+        }
+        animator.SetBool(HurtHash, hurt);
+        animator.SetBool(DieHash, die);
+    }
+    public void AttackAnimationComplete() => GetComponent<Orgre>().OnAttackAnimationComplete();
+    public void ResetAttackTriggers()
+    {
+        foreach (var trigger in attackTriggerHashes)
+        {
+            animator.ResetTrigger(trigger);
+        }
+    }
+
+    public void TriggerAttack(int index)
+    {
+        if (index >= 0 && index < attackTriggerHashes.Length)
+        {
+            animator.SetTrigger(attackTriggerHashes[index]);
+        }
+    }
+
+
+}

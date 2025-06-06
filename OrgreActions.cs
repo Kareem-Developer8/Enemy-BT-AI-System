@@ -1,0 +1,45 @@
+using UnityEngine;
+
+public class OrgreActions : MonoBehaviour
+{
+    [Header("Attack Settings")]
+    [SerializeField] Transform attackCheck;
+    [SerializeField] float attackCheckRadius = 1.5f;
+    [SerializeField] float attackDamage = 10f;
+    [SerializeField] public float attackCooldown = 0;
+    public float lastAttackTime;
+
+    void OnDrawGizmos()
+    {
+        if (attackCheck != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(attackCheck.position, attackCheckRadius);
+        }
+    }
+
+    public void PerformAttack()
+    {
+        lastAttackTime = Time.time;
+        Collider[] hits = Physics.OverlapSphere(attackCheck.position, attackCheckRadius);
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Player"))
+            {
+                Sophia player = hit.GetComponent<Sophia>();
+                if (player != null)
+                {
+                    player.TakeDamage(2); 
+                }
+            }
+            else if (hit.CompareTag("Army"))
+            {
+                Soldier soldier = hit.GetComponent<Soldier>();
+                if (soldier != null)
+                {
+                    soldier.TakeDamage(2);
+                }
+            }
+        }
+    }
+}
